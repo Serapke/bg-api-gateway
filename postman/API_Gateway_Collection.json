@@ -1,0 +1,318 @@
+{
+  "info": {
+    "name": "Board Game Planner - API Gateway",
+    "description": "API Gateway endpoints for authentication and service proxying",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/login",
+              "host": ["{{gateway_url}}"],
+              "path": ["login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('access_token', jsonData.access_token);",
+                  "    pm.environment.set('refresh_token', jsonData.refresh_token);",
+                  "    pm.environment.set('access_token_expires_at', jsonData.access_token_expires_at);",
+                  "    pm.environment.set('refresh_token_expires_at', jsonData.refresh_token_expires_at);",
+                  "    pm.environment.set('user_id', jsonData.user.id);",
+                  "    ",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.response.to.have.status(200);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Access token received', function () {",
+                  "        pm.expect(jsonData.access_token).to.not.be.empty;",
+                  "    });",
+                  "    ",
+                  "    pm.test('Refresh token received', function () {",
+                  "        pm.expect(jsonData.refresh_token).to.not.be.empty;",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{refresh_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{gateway_url}}/refresh",
+              "host": ["{{gateway_url}}"],
+              "path": ["refresh"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('access_token', jsonData.access_token);",
+                  "    pm.environment.set('access_token_expires_at', jsonData.access_token_expires_at);",
+                  "    ",
+                  "    pm.test('Token refresh successful', function () {",
+                  "        pm.response.to.have.status(200);",
+                  "    });",
+                  "    ",
+                  "    pm.test('New access token received', function () {",
+                  "        pm.expect(jsonData.access_token).to.not.be.empty;",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Gateway Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/up",
+              "host": ["{{gateway_url}}"],
+              "path": ["up"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gateway is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Error Scenarios",
+      "item": [
+        {
+          "name": "Invalid Login Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"invalid@example.com\",\n    \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/login",
+              "host": ["{{gateway_url}}"],
+              "path": ["login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login failed with invalid credentials', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Request without Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/v1/users/me",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "v1", "users", "me"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request rejected without token', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Request with Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_here"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/v1/users/me",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "v1", "users", "me"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request rejected with invalid token', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Service Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/v1/nonexistent/endpoint",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "v1", "nonexistent", "endpoint"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Service not found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-refresh access token if it's expired",
+          "const accessTokenExpiresAt = pm.environment.get('access_token_expires_at');",
+          "const refreshToken = pm.environment.get('refresh_token');",
+          "",
+          "if (accessTokenExpiresAt && refreshToken) {",
+          "    const expirationTime = new Date(accessTokenExpiresAt).getTime();",
+          "    const currentTime = new Date().getTime();",
+          "    const timeBuffer = 5 * 60 * 1000; // 5 minutes buffer",
+          "    ",
+          "    if (currentTime >= (expirationTime - timeBuffer)) {",
+          "        console.log('Access token is about to expire, refreshing...');",
+          "        ",
+          "        const refreshRequest = {",
+          "            url: pm.environment.get('gateway_url') + '/refresh',",
+          "            method: 'POST',",
+          "            header: {",
+          "                'Authorization': 'Bearer ' + refreshToken,",
+          "                'Content-Type': 'application/json'",
+          "            }",
+          "        };",
+          "        ",
+          "        pm.sendRequest(refreshRequest, function (err, response) {",
+          "            if (response && response.code === 200) {",
+          "                const jsonData = response.json();",
+          "                pm.environment.set('access_token', jsonData.access_token);",
+          "                pm.environment.set('access_token_expires_at', jsonData.access_token_expires_at);",
+          "                console.log('Access token refreshed successfully');",
+          "            } else {",
+          "                console.log('Failed to refresh access token');",
+          "            }",
+          "        });",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "id": "api-gateway-env",
+  "name": "API Gateway - Development",
+  "values": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:3000",
+      "description": "API Gateway base URL",
+      "enabled": true
+    },
+    {
+      "key": "user_service_url",
+      "value": "http://localhost:8080",
+      "description": "User Service base URL",
+      "enabled": true
+    },
+    {
+      "key": "user_email",
+      "value": "test@example.com",
+      "description": "Test user email for login",
+      "enabled": true
+    },
+    {
+      "key": "user_password",
+      "value": "password123",
+      "description": "Test user password for login",
+      "enabled": true
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "description": "JWT access token (auto-populated after login)",
+      "enabled": true
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "description": "JWT refresh token (auto-populated after login)",
+      "enabled": true
+    },
+    {
+      "key": "access_token_expires_at",
+      "value": "",
+      "description": "Access token expiration time (auto-populated)",
+      "enabled": true
+    },
+    {
+      "key": "refresh_token_expires_at",
+      "value": "",
+      "description": "Refresh token expiration time (auto-populated)",
+      "enabled": true
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "description": "Current user ID (auto-populated after login)",
+      "enabled": true
+    },
+    {
+      "key": "collection_id",
+      "value": "",
+      "description": "Collection ID for testing (auto-populated after creating collection)",
+      "enabled": true
+    }
+  ]
+}
