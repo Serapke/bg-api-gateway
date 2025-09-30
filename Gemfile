@@ -36,7 +36,7 @@ gem "thruster", require: false
 # gem "rack-cors"
 
 # HTTP client library for making requests to other services
-gem "faraday", "~> 2.0"
+gem "faraday", "~> 2.14"
 
 # JWT token handling for authentication
 gem "jwt", "~> 2.0"
