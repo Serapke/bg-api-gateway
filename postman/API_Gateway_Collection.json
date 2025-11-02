@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Board Game Planner - API Gateway",
+    "name": "API Gateway",
     "description": "API Gateway endpoints for authentication and service proxying",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "1.0.0"
