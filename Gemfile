@@ -39,7 +39,7 @@ gem "thruster", require: false
 gem "faraday", "~> 2.0"
 
 # JWT token handling for authentication
-gem "jwt", "~> 2.0"
+gem "jwt", "~> 3.1"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
